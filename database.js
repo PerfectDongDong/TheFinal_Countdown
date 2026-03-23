@@ -3,7 +3,7 @@ const DB_VERSION = 1;
 const STORE_SETTINGS = 'settings';
 const STORE_TASKS = 'tasks';
 const BACKUP_KEY = 'final-countdown-backups';
-const MAX_BACKUPS = 10;
+const MAX_BACKUPS = 3;
 
 class Database {
     constructor() {
@@ -22,6 +22,7 @@ class Database {
             request.onsuccess = () => {
                 this.db = request.result;
                 console.log('Database opened successfully');
+                this.cleanupOldBackups();
                 resolve(this.db);
             };
 
@@ -510,6 +511,15 @@ class Database {
 
     clearAllBackups() {
         localStorage.removeItem(BACKUP_KEY);
+    }
+
+    cleanupOldBackups() {
+        let backups = this.getBackups();
+        if (backups.length > MAX_BACKUPS) {
+            backups = backups.slice(0, MAX_BACKUPS);
+            this.saveBackups(backups);
+            console.log(`已清理旧备份，保留最近${MAX_BACKUPS}个备份`);
+        }
     }
 }
 
