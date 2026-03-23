@@ -1,0 +1,13 @@
+{
+  "name": "the-final-countdown",
+  "version": "1.0.0",
+  "description": "A cross-platform life countdown and task management app",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "dev": "python -m http.server 8000"
+  },
+  "keywords": ["countdown", "task", "cross-platform"],
+  "author": "",
+  "license": "MIT"
+}

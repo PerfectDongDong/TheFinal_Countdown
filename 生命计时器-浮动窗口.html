@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生命倒计时 - 浮动窗口</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: transparent;
+        }
+        
+        .float-container {
+            width: 300px;
+            height: auto;
+            background: var(--bg-card);
+            border-radius: 15px;
+            box-shadow: var(--shadow-lg);
+            cursor: move;
+            user-select: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .float-header {
+            padding: 10px 15px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .float-title {
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .float-controls {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .float-btn {
+            width: 20px;
+            height: 20px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-minimize {
+            background: #fbbf24;
+        }
+        
+        .btn-close {
+            background: #ef4444;
+        }
+        
+        .float-content {
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .float-countdown {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .float-countdown-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .float-countdown-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .float-countdown-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .float-progress {
+            margin-bottom: 15px;
+        }
+        
+        .float-progress-bar {
+            background: var(--bg-secondary);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .float-progress-fill {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s;
+        }
+        
+        .float-progress-text {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+        
+        .float-footer {
+            padding: 0 20px 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .float-footer .btn {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+        }
+        
+        .settings-panel {
+            display: none;
+            padding: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .settings-panel.active {
+            display: block;
+        }
+        
+        .settings-panel .form-group {
+            margin-bottom: 12px;
+        }
+        
+        .settings-panel label {
+            font-size: 0.85rem;
+        }
+        
+        .settings-panel input {
+            padding: 8px;
+            font-size: 0.85rem;
+        }
+        
+        .opacity-control {
+            padding: 0 20px 15px;
+        }
+        
+        .opacity-control label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+        
+        .opacity-control input[type="range"] {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="float-container" id="float-container">
+        <div class="float-header" id="float-header">
+            <span class="float-title">⏰ 生命倒计时</span>
+            <div class="float-controls">
+                <button class="float-btn btn-minimize" id="btn-minimize" title="最小化">−</button>
+                <button class="float-btn btn-close" id="btn-close" title="关闭">×</button>
+            </div>
+        </div>
+        
+        <div class="float-content">
+            <div class="float-countdown">
+                <div class="float-countdown-item">
+                    <span class="float-countdown-value" id="float-years">--</span>
+                    <span class="float-countdown-label">年</span>
+                </div>
+                <div class="float-countdown-item">
+                    <span class="float-countdown-value" id="float-months">--</span>
+                    <span class="float-countdown-label">月</span>
+                </div>
+                <div class="float-countdown-item">
+                    <span class="float-countdown-value" id="float-days">--</span>
+                    <span class="float-countdown-label">日</span>
+                </div>
+            </div>
+            
+            <div class="float-progress">
+                <div class="float-progress-bar">
+                    <div class="float-progress-fill" id="float-progress-fill"></div>
+                </div>
+                <p class="float-progress-text" id="float-progress-text">生命进度: --%</p>
+            </div>
+        </div>
+        
+        <div class="opacity-control">
+            <label>透明度</label>
+            <input type="range" id="opacity-slider" min="30" max="100" value="100">
+        </div>
+        
+        <div class="float-footer">
+            <button class="btn btn-secondary" id="btn-toggle-settings">设置</button>
+            <button class="btn btn-primary" id="btn-open-full">完整版本</button>
+        </div>
+        
+        <div class="settings-panel" id="settings-panel">
+            <div class="form-group">
+                <label for="float-birthday">出生日期</label>
+                <input type="date" id="float-birthday">
+            </div>
+            <div class="form-group">
+                <label for="float-life-expectancy">预期寿命（岁）</label>
+                <input type="number" id="float-life-expectancy" min="1" max="150" value="80">
+            </div>
+            <button class="btn btn-primary" id="btn-save-settings" style="width: 100%;">保存</button>
+        </div>
+    </div>
+
+    <script src="database.js"></script>
+    <script>
+        let appData = {
+            birthday: null,
+            lifeExpectancy: 80,
+            tasks: [],
+            theme: 'auto'
+        };
+
+        let isDragging = false;
+        let currentX;
+        let currentY;
+        let initialX;
+        let initialY;
+        let xOffset = 0;
+        let yOffset = 0;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initDatabase();
+            await loadAppData();
+            initDrag();
+            initControls();
+            updateUI();
+            setInterval(updateCountdown, 1000);
+        });
+
+        async function initDatabase() {
+            try {
+                await db.init();
+                console.log('Database initialized successfully');
+            } catch (error) {
+                console.error('Failed to initialize database:', error);
+            }
+        }
+
+        async function loadAppData() {
+            try {
+                const settings = await db.getAllSettings();
+                appData.birthday = settings.birthday || null;
+                appData.lifeExpectancy = settings.lifeExpectancy || 80;
+                appData.theme = settings.theme || 'auto';
+            } catch (error) {
+                console.error('Failed to load from database, falling back to localStorage:', error);
+                loadFromLocalStorage();
+            }
+            applyTheme();
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('final-countdown-data');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    appData = data;
+                } catch (e) {
+                    console.error('Failed to load from localStorage:', e);
+                }
+            }
+        }
+
+        async function saveAppData() {
+            try {
+                await db.saveSettings('birthday', appData.birthday);
+                await db.saveSettings('lifeExpectancy', appData.lifeExpectancy);
+                await db.saveSettings('theme', appData.theme);
+            } catch (error) {
+                console.error('Failed to save to database, falling back to localStorage:', error);
+                saveToLocalStorage();
+            }
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('final-countdown-data', JSON.stringify(appData));
+        }
+
+        function applyTheme() {
+            let theme = appData.theme;
+            if (theme === 'auto') {
+                theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+            }
+        }
+
+        function initDrag() {
+            const container = document.getElementById('float-container');
+            const header = document.getElementById('float-header');
+
+            header.addEventListener('mousedown', dragStart);
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', dragEnd);
+
+            function dragStart(e) {
+                if (e.target.closest('.float-controls')) return;
+                initialX = e.clientX - xOffset;
+                initialY = e.clientY - yOffset;
+                isDragging = true;
+            }
+
+            function drag(e) {
+                if (isDragging) {
+                    e.preventDefault();
+                    currentX = e.clientX - initialX;
+                    currentY = e.clientY - initialY;
+                    xOffset = currentX;
+                    yOffset = currentY;
+                    container.style.transform = `translate(${currentX}px, ${currentY}px)`;
+                }
+            }
+
+            function dragEnd() {
+                isDragging = false;
+            }
+        }
+
+        function initControls() {
+            document.getElementById('btn-toggle-settings').addEventListener('click', () => {
+                document.getElementById('settings-panel').classList.toggle('active');
+            });
+
+            document.getElementById('btn-save-settings').addEventListener('click', saveSettings);
+            document.getElementById('btn-open-full').addEventListener('click', () => {
+                window.open('生命计时器.html', '_blank');
+            });
+            document.getElementById('btn-close').addEventListener('click', () => {
+                if (confirm('确定要关闭浮动窗口吗？')) {
+                    window.close();
+                }
+            });
+            document.getElementById('btn-minimize').addEventListener('click', () => {
+                document.querySelector('.float-content').style.display = 
+                    document.querySelector('.float-content').style.display === 'none' ? 'block' : 'none';
+                document.querySelector('.float-footer').style.display = 
+                    document.querySelector('.float-footer').style.display === 'none' ? 'flex' : 'none';
+                document.querySelector('.opacity-control').style.display = 
+                    document.querySelector('.opacity-control').style.display === 'none' ? 'block' : 'none';
+            });
+
+            document.getElementById('opacity-slider').addEventListener('input', (e) => {
+                document.getElementById('float-container').style.opacity = e.target.value / 100;
+            });
+        }
+
+        async function saveSettings() {
+            const birthdayInput = document.getElementById('float-birthday').value;
+            const lifeExpectancy = parseInt(document.getElementById('float-life-expectancy').value);
+            
+            if (!birthdayInput) {
+                alert('请选择出生日期');
+                return;
+            }
+            
+            // 将出生日期设置为北京时间 00:00:00
+            const birthday = new Date(birthdayInput + 'T00:00:00+08:00');
+            appData.birthday = birthday.toISOString();
+            appData.lifeExpectancy = lifeExpectancy;
+            await saveAppData();
+            updateUI();
+            alert('设置已保存');
+        }
+
+        function updateUI() {
+            if (appData.birthday) {
+                const birthdayDate = new Date(appData.birthday);
+                const year = birthdayDate.getFullYear();
+                const month = String(birthdayDate.getMonth() + 1).padStart(2, '0');
+                const day = String(birthdayDate.getDate()).padStart(2, '0');
+                document.getElementById('float-birthday').value = `${year}-${month}-${day}`;
+                document.getElementById('float-life-expectancy').value = appData.lifeExpectancy;
+            }
+            updateCountdown();
+        }
+
+        function getBeijingDate() {
+            const now = new Date();
+            return new Date(now.getTime() + (now.getTimezoneOffset() + 480) * 60000);
+        }
+
+        function updateCountdown() {
+            if (!appData.birthday) {
+                document.getElementById('float-years').textContent = '--';
+                document.getElementById('float-months').textContent = '--';
+                document.getElementById('float-days').textContent = '--';
+                document.getElementById('float-progress-fill').style.width = '0%';
+                document.getElementById('float-progress-text').textContent = '生命进度: --%';
+                return;
+            }
+            
+            const birthday = new Date(appData.birthday);
+            const today = getBeijingDate();
+            const deathDate = new Date(birthday);
+            deathDate.setFullYear(birthday.getFullYear() + appData.lifeExpectancy);
+            
+            const diff = deathDate - today;
+            
+            if (diff <= 0) {
+                document.getElementById('float-years').textContent = '0';
+                document.getElementById('float-months').textContent = '0';
+                document.getElementById('float-days').textContent = '0';
+                document.getElementById('float-progress-fill').style.width = '100%';
+                document.getElementById('float-progress-text').textContent = '生命进度: 100%';
+                return;
+            }
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const years = Math.floor(days / 365);
+            const remainingDays = days % 365;
+            const months = Math.floor(remainingDays / 30);
+            const finalDays = remainingDays % 30;
+            
+            document.getElementById('float-years').textContent = years;
+            document.getElementById('float-months').textContent = months;
+            document.getElementById('float-days').textContent = finalDays;
+            
+            const totalDays = appData.lifeExpectancy * 365;
+            const livedDays = Math.floor((today - birthday) / (1000 * 60 * 60 * 24));
+            const progress = Math.min((livedDays / totalDays) * 100, 100);
+            
+            document.getElementById('float-progress-fill').style.width = `${progress}%`;
+            document.getElementById('float-progress-text').textContent = `生命进度: ${progress.toFixed(1)}%`;
+        }
+    </script>
+</body>
+</html>

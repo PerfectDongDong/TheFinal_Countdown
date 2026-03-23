@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生命倒计时 - The Final Countdown</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app" class="app-container">
+        <header class="app-header">
+            <h1>⏰ 生命倒计时</h1>
+            <nav class="nav-tabs">
+                <button class="nav-tab active" data-tab="countdown">倒计时</button>
+                <button class="nav-tab" data-tab="tasks">任务管理</button>
+                <button class="nav-tab" data-tab="settings">设置</button>
+            </nav>
+        </header>
+
+        <main class="app-main">
+            <section id="countdown-tab" class="tab-content active">
+                <div class="countdown-display">
+                    <div class="countdown-section">
+                        <h3 class="countdown-section-title">⏳ 剩余生命</h3>
+                        <div class="countdown-card">
+                            <div class="countdown-item">
+                                <span class="countdown-value" id="years-left">--</span>
+                                <span class="countdown-label">年</span>
+                            </div>
+                            <div class="countdown-item">
+                                <span class="countdown-value" id="months-left">--</span>
+                                <span class="countdown-label">月</span>
+                            </div>
+                            <div class="countdown-item">
+                                <span class="countdown-value" id="days-left">--</span>
+                                <span class="countdown-label">日</span>
+                            </div>
+                            <div class="countdown-item">
+                                <span class="countdown-value" id="hours-left">--</span>
+                                <span class="countdown-label">时</span>
+                            </div>
+                            <div class="countdown-item">
+                                <span class="countdown-value" id="minutes-left">--</span>
+                                <span class="countdown-label">分</span>
+                            </div>
+                            <div class="countdown-item">
+                                <span class="countdown-value" id="seconds-left">--</span>
+                                <span class="countdown-label">秒</span>
+                            </div>
+                        </div>
+                        <div class="countdown-summary">
+                            <span class="summary-label">总剩余天数：</span>
+                            <span class="summary-value" id="total-days-left">--</span>
+                            <span class="summary-label">天</span>
+                        </div>
+                    </div>
+                    
+                    <div class="countdown-section">
+                        <h3 class="countdown-section-title">✨ 已走过</h3>
+                        <div class="countdown-card">
+                            <div class="countdown-item">
+                                <span class="countdown-value" id="years-lived">--</span>
+                                <span class="countdown-label">年</span>
+                            </div>
+                            <div class="countdown-item">
+                                <span class="countdown-value" id="months-lived">--</span>
+                                <span class="countdown-label">月</span>
+                            </div>
+                            <div class="countdown-item">
+                                <span class="countdown-value" id="days-lived">--</span>
+                                <span class="countdown-label">日</span>
+                            </div>
+                            <div class="countdown-item">
+                                <span class="countdown-value" id="hours-lived">--</span>
+                                <span class="countdown-label">时</span>
+                            </div>
+                            <div class="countdown-item">
+                                <span class="countdown-value" id="minutes-lived">--</span>
+                                <span class="countdown-label">分</span>
+                            </div>
+                            <div class="countdown-item">
+                                <span class="countdown-value" id="seconds-lived">--</span>
+                                <span class="countdown-label">秒</span>
+                            </div>
+                        </div>
+                        <div class="countdown-summary">
+                            <span class="summary-label">总已活天数：</span>
+                            <span class="summary-value" id="total-days-lived">--</span>
+                            <span class="summary-label">天</span>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="life-progress"></div>
+                        </div>
+                        <p class="progress-text" id="progress-text">生命进度: --%</p>
+                    </div>
+                </div>
+                <div class="countdown-setup" id="countdown-setup">
+                    <h3>设置您的信息</h3>
+                    <div class="form-group">
+                        <label for="birthday">出生日期</label>
+                        <input type="date" id="birthday" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="life-expectancy">预期寿命（岁）</label>
+                        <input type="number" id="life-expectancy" min="1" max="150" value="80">
+                    </div>
+                    <button class="btn btn-primary" id="save-settings">保存设置</button>
+                </div>
+            </section>
+
+            <section id="tasks-tab" class="tab-content">
+                <div class="tasks-header">
+                    <h2>任务管理</h2>
+                    <button class="btn btn-primary" id="add-task-btn">+ 添加任务</button>
+                </div>
+                <div class="tasks-groups" id="tasks-groups"></div>
+            </section>
+
+            <section id="settings-tab" class="tab-content">
+                <h2>设置</h2>
+                <div class="settings-group">
+                    <h3>外观</h3>
+                    <div class="form-group">
+                        <label for="theme-select">主题</label>
+                        <select id="theme-select">
+                            <option value="light">浅色</option>
+                            <option value="dark">深色</option>
+                            <option value="auto">跟随系统</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="settings-group">
+                    <h3>数据存储说明</h3>
+                    <div class="info-box">
+                        <p><strong>数据存储位置：</strong>IndexedDB（浏览器本地持久化存储）</p>
+                        <p><strong>数据安全性：</strong>数据保存在本地，清除浏览器缓存不会丢失数据（除非清除网站数据）</p>
+                        <p><strong>备份建议：</strong>建议定期导出数据或创建备份</p>
+                    </div>
+                </div>
+                <div class="settings-group">
+                    <h3>数据导入/导出</h3>
+                    <p style="margin-bottom: 15px; color: var(--text-secondary); font-size: 0.9rem;">支持 JSON（完整数据）和 CSV（仅任务）格式</p>
+                    <button class="btn btn-secondary" id="export-json">导出 JSON</button>
+                    <button class="btn btn-secondary" id="export-csv">导出 CSV</button>
+                    <button class="btn btn-secondary" id="import-data">导入数据</button>
+                </div>
+                <div class="settings-group">
+                    <h3>数据备份</h3>
+                    <p style="margin-bottom: 15px; color: var(--text-secondary); font-size: 0.9rem;">最多保存10个本地备份</p>
+                    <button class="btn btn-primary" id="create-backup">创建备份</button>
+                    <button class="btn btn-secondary" id="view-backups">查看备份</button>
+                    <button class="btn btn-danger" id="clear-backups">清除备份</button>
+                </div>
+                <div class="settings-group">
+                    <h3>危险操作</h3>
+                    <p style="margin-bottom: 15px; color: var(--text-secondary); font-size: 0.9rem;">⚠️ 此操作将清除所有数据且不可恢复！</p>
+                    <button class="btn btn-danger" id="clear-data">清除所有数据</button>
+                </div>
+                <div class="settings-group">
+                    <h3>关于</h3>
+                    <p>生命倒计时 v1.0.0</p>
+                    <p>珍惜时间，活在当下</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="task-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">添加任务</h3>
+                <button class="close-btn" id="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="task-title">任务标题</label>
+                    <input type="text" id="task-title" placeholder="输入任务标题" required>
+                </div>
+                <div class="form-group">
+                    <label for="task-description">任务描述</label>
+                    <textarea id="task-description" placeholder="输入任务描述"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="task-year">目标年份</label>
+                    <select id="task-year" required>
+                    </select>
+                </div>
+                <div class="form-group has-checkbox">
+                    <label for="task-completed">已完成</label>
+                    <input type="checkbox" id="task-completed">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-task">取消</button>
+                <button class="btn btn-primary" id="save-task">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="backups-modal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3>数据备份</h3>
+                <button class="close-btn" id="close-backups-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="backups-list"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="close-backups-btn">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="database.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
