@@ -91,11 +91,36 @@ body {
     color: white;
 }
 
+/* 基于 data-active-tab 属性的样式 */
+html[data-active-tab="countdown"] .nav-tab[data-tab="countdown"],
+html[data-active-tab="tasks"] .nav-tab[data-tab="tasks"],
+html[data-active-tab="settings"] .nav-tab[data-tab="settings"] {
+    background: var(--primary-color);
+    color: white;
+}
+
 .tab-content {
     display: none;
 }
 
 .tab-content.active {
+    display: block;
+}
+
+/* 基于 data-active-tab 属性的样式 */
+html[data-active-tab="countdown"] #countdown-tab,
+html[data-active-tab="tasks"] #tasks-tab,
+html[data-active-tab="settings"] #settings-tab {
+    display: block;
+}
+
+/* 默认显示倒计时标签（当没有 data-active-tab 时） */
+html:not([data-active-tab]) .nav-tab[data-tab="countdown"] {
+    background: var(--primary-color);
+    color: white;
+}
+
+html:not([data-active-tab]) #countdown-tab {
     display: block;
 }
 

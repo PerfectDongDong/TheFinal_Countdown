@@ -164,7 +164,13 @@ function switchTab(tabName) {
 function restoreActiveTab() {
     const savedTab = localStorage.getItem('final-countdown-active-tab');
     if (savedTab && ['countdown', 'tasks', 'settings'].includes(savedTab)) {
-        switchTab(savedTab);
+        // 同步设置 data 属性，确保 HTML 和 JS 状态一致
+        document.documentElement.dataset.activeTab = savedTab;
+        // 同时更新 active 类，保持兼容性
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelector(`[data-tab="${savedTab}"]`).classList.add('active');
+        document.getElementById(`${savedTab}-tab`).classList.add('active');
     }
 }
 
