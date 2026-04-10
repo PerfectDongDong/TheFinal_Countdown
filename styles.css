@@ -86,9 +86,9 @@ body {
     color: var(--text-primary);
 }
 
-.nav-tab.active {
-    background: var(--primary-color);
-    color: white;
+.nav-tab {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
 }
 
 /* 基于 data-active-tab 属性的样式 */
@@ -101,10 +101,6 @@ html[data-active-tab="settings"] .nav-tab[data-tab="settings"] {
 
 .tab-content {
     display: none;
-}
-
-.tab-content.active {
-    display: block;
 }
 
 /* 基于 data-active-tab 属性的样式 */
